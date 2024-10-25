@@ -1,0 +1,81 @@
+service: ${file(./serverless/serverless.bf-fidic-hml.yml):serviceName}
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  environment:
+    SQS_QUEUE_URL:
+      Ref: SQSQueue
+  iamRoleStatements:  # Permissões de envio e recebimento para o Lambda
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueAttributes
+      Resource:
+        - arn:aws:sqs:${self:provider.region}:*:${self:resources.Resources.SQSQueue.Properties.QueueName}
+
+functions:
+  sendMessage:  # Função produtora
+    name: bf-fidic-transaction-producer
+    handler: build/handler.sendMessage
+    events:
+      - http:
+          path: send-message
+          method: post
+          cors: true
+          integration: lambda # Integração com Lambda (padrão)
+          request:
+            schemas:
+              application/json:
+                schema: ${file(models/transaction-schema.json)}
+                name: TransactionRegister
+                description: 'Valida as informações da transação'
+
+
+  consumeMessage:  # Função consumidora
+    name: bf-fidic-transaction-consumer
+    handler: build/consumer.consumeMessage
+    environment:
+      DATABASE_URL: ${ssm:/bffidic/api/hml/database-url}    
+    vpc:
+        securityGroupIds:
+            - sg-07d7f4cad2ee323b7
+        subnetIds:
+            - subnet-09503b996aac18eb8
+            - subnet-0fce94dad57e60c79
+
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - SQSQueue
+              - Arn
+
+resources:
+  Resources:
+    SQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: bf-fidic-transaction
+
+  Outputs:
+    SQSQueueUrl:
+      Value:
+        Ref: SQSQueue
+      Export:
+        Name: SQSQueueUrl
+
+# environment:
+#   DATABASE_URL: ${ssm:/bffidic/api/hml/database-url}
+#   SQS_QUEUE_URL:
+#     Ref: SQSQueue
+
+package:
+    patterns:
+        - "!node_modules/.prisma/client/libquery_engine-*"
+        - "node_modules/.prisma/client/libquery_engine-rhel-*"
+        - "!node_modules/prisma/libquery_engine-*"
+        - "!node_modules/@prisma/engines/**"

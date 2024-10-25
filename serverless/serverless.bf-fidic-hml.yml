@@ -1,0 +1,8 @@
+serviceName: sqs-lambda-service
+
+# vpc:
+#     securityGroupIds:
+#         - sg-07d7f4cad2ee323b7
+#     subnetIds:
+#         - subnet-09503b996aac18eb8
+#         - subnet-0fce94dad57e60c79
