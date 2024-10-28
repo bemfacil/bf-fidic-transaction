@@ -90,7 +90,7 @@ resources:
       Value:
         Ref: SQSQueue
       Export:
-        Name: SQSQueueUrl
+        Name: ${env:STACK_NAME}-SQSQueueUrl
 
 package:
     include:
