@@ -1,0 +1,27 @@
+{
+    "type": "object",
+    "properties": {
+      "external_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "nsu": {
+        "type": "string",
+        "minLength": 1
+      },
+      "valor": {
+        "type": "number",
+        "minimum": 0
+      },
+      "modalidade": {
+        "type": "string",
+        "enum": ["Crédito", "Débito", "Pix", "Boleto"]
+      },
+      "bandeira": {
+        "type": "string"
+      }
+    },
+    "required": ["external_id", "nsu", "valor", "modalidade", "bandeira"],
+    "additionalProperties": false
+}
+  

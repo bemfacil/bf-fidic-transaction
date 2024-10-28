@@ -19,7 +19,7 @@ provider:
 
 functions:
   sendMessage:  # Função produtora
-    name: bf-fidic-transaction-producer
+    name: ${env:STACK_NAME}-transaction-producer
     handler: build/handler.sendMessage
     events:
       - http:
@@ -36,7 +36,7 @@ functions:
 
 
   consumeMessage:  # Função consumidora
-    name: bf-fidic-transaction-consumer
+    name: ${env:STACK_NAME}-transaction-consumer
     handler: build/consumer.consumeMessage
     environment:
       DATABASE_URL: ${ssm:/bffidic/api/hml/database-url}    
@@ -67,11 +67,6 @@ resources:
         Ref: SQSQueue
       Export:
         Name: SQSQueueUrl
-
-# environment:
-#   DATABASE_URL: ${ssm:/bffidic/api/hml/database-url}
-#   SQS_QUEUE_URL:
-#     Ref: SQSQueue
 
 package:
     patterns:
