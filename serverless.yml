@@ -30,7 +30,7 @@ functions:
           request:
             schemas:
               application/json:
-                schema: ${file(./models/transaction-schema.json)}
+                schema: ${file(models/transaction-schema.json)}
                 name: TransactionRegister
                 description: 'Valida as informações da transação'
 
@@ -70,6 +70,7 @@ resources:
 package:
     include:
         - models/transaction-schema.json
+        - build/**
     patterns:
         - "!node_modules/.prisma/client/libquery_engine-*"
         - "node_modules/.prisma/client/libquery_engine-rhel-*"

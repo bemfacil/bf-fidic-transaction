@@ -39,7 +39,7 @@ jobs:
             - name: Deploy
               uses: serverless/github-action@master
               with:
-                  args: deploy --stage hml
+                  args: deploy --stage hml --verbose
               env:
                   NODE_ENV: production
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
