@@ -9,14 +9,18 @@ export const consumeMessage: SQSHandler = async (event: SQSEvent) => {
     for (const record of event.Records) {
       const body = JSON.parse(record.body);
       console.log('Processando mensagem:', body);
-
+      let data_vencimento = new Date(body.data_vencimento);
       await prisma.transacao.create({
         data: {
           external_id: body.external_id,
+          parcela_cod: body.parcela_cod,
           nsu: body.nsu,
           valor: body.valor,
-          modalidade: body.modalidade,
+          mdr: body.mdr,
           bandeira: body.bandeira,
+          modalidade: body.modalidade,
+          adquirente: body.adquirente,
+          data_vencimento: data_vencimento,
           create_date: new Date(),
           update_date: new Date()
         },

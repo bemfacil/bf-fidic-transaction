@@ -37,6 +37,10 @@ functions:
                       "type": "string",
                       "minLength": 1
                     },
+                    "parcela_cod": {
+                      "type": "string",
+                      "minLength": 1
+                    },
                     "nsu": {
                       "type": "string",
                       "minLength": 1
@@ -45,13 +49,18 @@ functions:
                       "type": "number",
                       "minimum": 0
                     },
+                    "mdr": {
+                      "type": "number",
+                      "minimum": 0
+                    },
                     "modalidade": {
                       "type": "string",
                       "enum": ["Crédito", "Débito", "Pix", "Boleto"]
                     },
-                    "bandeira": {
-                      "type": "string"
-                    }
+                    "bandeira": {"type": "string"},
+                    "data_vencimento": {"type": "string"},
+                    "adquirente": {"type": "string"},
+                    
                   },
                   "required": ["external_id", "nsu", "valor", "modalidade", "bandeira"],
                   "additionalProperties": false
@@ -83,7 +92,7 @@ resources:
     SQSQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: bf-fidic-transaction
+        QueueName: ${env:STACK_NAME}-transaction
 
   Outputs:
     SQSQueueUrl:

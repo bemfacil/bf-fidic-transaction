@@ -1,8 +1,7 @@
 // schema.prisma
 
 generator client {
-  provider        = "prisma-client-js"
-  binaryTargets   = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -16,7 +15,7 @@ model Arranjo {
   bandeira         String             @db.VarChar(50)
   data_pagamento   DateTime
   data_vencimento  DateTime
-  valor            Float
+  valor            Int
   create_date      DateTime
   update_date      DateTime
   UnidadeRecebivel UnidadeRecebivel[]
@@ -44,13 +43,18 @@ model UnidadeRecebivelStatus {
 
 model Transacao {
   id                   String           @id @default(uuid()) @db.Uuid
-  external_id          String           @unique @db.VarChar(32)
-  nsu                  String           @unique @db.VarChar(20)
+  external_id          String           @db.VarChar(32)
+  parcela_cod          String           @db.VarChar(32)
+  nsu                  String           @db.VarChar(20)
   unidade_recebivel_id String?          @db.Uuid
-  valor                Float
+  valor                Int
+  mdr                  Int
   modalidade           String           @db.VarChar(32)
   bandeira             String           @db.VarChar(32)
+  adquirente           String           @db.VarChar(32)
+  data_vencimento      DateTime         @db.Date
   unidade_recebivel    UnidadeRecebivel? @relation(fields: [unidade_recebivel_id], references: [id])
   create_date          DateTime
   update_date          DateTime
+  @@unique([external_id, parcela_cod, nsu], name: "transacao_id")
 }
