@@ -30,7 +30,32 @@ functions:
           request:
             schemas:
               application/json:
-                schema: ${file(models/transaction-schema.json)}
+                schema: {
+                  "type": "object",
+                  "properties": {
+                    "external_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "nsu": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "valor": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "modalidade": {
+                      "type": "string",
+                      "enum": ["Crédito", "Débito", "Pix", "Boleto"]
+                    },
+                    "bandeira": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["external_id", "nsu", "valor", "modalidade", "bandeira"],
+                  "additionalProperties": false
+                } 
                 name: TransactionRegister
                 description: 'Valida as informações da transação'
 

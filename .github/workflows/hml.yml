@@ -36,8 +36,8 @@ jobs:
             - name: Remove Prisma unused engine
               run: rm -f ./node_modules/.prisma/client/libquery_engine-debian-openssl-1.1.x.so.node
 
-            - name: List files directory
-              run: ls -R
+            - name: List models directory
+              run: ls -R models
 
             - name: Deploy
               uses: serverless/github-action@master
