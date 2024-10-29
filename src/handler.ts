@@ -20,13 +20,13 @@ export const sendMessage: APIGatewayProxyHandler = async (event) => {
     await sqs.sendMessage(params).promise();
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Mensagem enviada com sucesso!' }),
+      body: `{ "message": "Mensagem enviada com sucesso!" }`,
     };
   } catch (error) {
     console.error('Erro ao enviar mensagem: ', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Erro ao enviar mensagem' }),
+      body: `{ "message": "Erro ao enviar mensagem" }`,
     };
   }
 };

@@ -26,7 +26,7 @@ functions:
           path: send-message
           method: post
           cors: true
-          integration: lambda # Integração com Lambda (padrão)
+          integration: lambda-proxy
           request:
             schemas:
               application/json:
@@ -53,18 +53,17 @@ functions:
                       "type": "number",
                       "minimum": 0
                     },
-                    "modalidade": {
-                      "type": "string",
-                      "enum": ["Crédito", "Débito", "Pix", "Boleto"]
-                    },
+                    "modalidade": {"type": "string"},
                     "bandeira": {"type": "string"},
-                    "data_vencimento": {"type": "string"},
-                    "adquirente": {"type": "string"},
-                    
+                    "data_vencimento": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                    },
+                    "adquirente": {"type": "string"}
                   },
                   "required": ["external_id", "nsu", "valor", "modalidade", "bandeira"],
                   "additionalProperties": false
-                } 
+                }
                 name: TransactionRegister
                 description: 'Valida as informações da transação'
 
