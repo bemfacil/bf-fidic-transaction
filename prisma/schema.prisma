@@ -11,25 +11,50 @@ datasource db {
 
 model Arranjo {
   id               String             @id @default(uuid()) @db.Uuid
-  external_id      String             @unique @db.VarChar(32)
   bandeira         String             @db.VarChar(50)
+  modalidade       String             @db.VarChar(32)
+}
+
+model ArranjoEnvio {
+  id               String             @id @default(uuid()) @db.Uuid
+  external_id      String?            @unique @db.VarChar(64)
   data_pagamento   DateTime
   data_vencimento  DateTime
   valor            Int
+  valor_enviado    Int?
+  status           ArranjoStatusEnum? @default(CRIADO)
   create_date      DateTime
   update_date      DateTime
-  UnidadeRecebivel UnidadeRecebivel[]
+  Transacao Transacao[]
+  Validacao ArranjoValidacao[]
+}
+
+enum ArranjoStatusEnum {
+  CRIADO
+  ENVIADO
+  CONFIRMADO
+  INVALIDO
+  PREVALIDADO
+  VALIDADO
+}
+
+model ArranjoValidacao {
+  id               String              @id @default(uuid()) @db.Uuid
+  arranjo_id       String?             @db.Uuid
+  payload          Json
+  status           String?
+  create_date      DateTime
+  update_date      DateTime
+  arranjo    Arranjo? @relation(fields: [arranjo_id], references: [id])
 }
 
 model UnidadeRecebivel {
   id                     String                   @id @default(uuid()) @db.Uuid
   external_id            String                   @unique @db.VarChar(32)
   arranjo_id             String                   @db.Uuid
-  arranjo                Arranjo                  @relation(fields: [arranjo_id], references: [id])
   create_date            DateTime
   update_date            DateTime
   UnidadeRecebivelStatus UnidadeRecebivelStatus[]
-  Transacao              Transacao[]
 }
 
 model UnidadeRecebivelStatus {
@@ -46,14 +71,14 @@ model Transacao {
   external_id          String           @db.VarChar(32)
   parcela_cod          String           @db.VarChar(32)
   nsu                  String           @db.VarChar(20)
-  unidade_recebivel_id String?          @db.Uuid
+  arranjo_id           String?          @db.Uuid
   valor                Int
   mdr                  Int
   modalidade           String           @db.VarChar(32)
   bandeira             String           @db.VarChar(32)
   adquirente           String           @db.VarChar(32)
   data_vencimento      DateTime         @db.Date
-  unidade_recebivel    UnidadeRecebivel? @relation(fields: [unidade_recebivel_id], references: [id])
+  arranjo    Arranjo? @relation(fields: [arranjo_id], references: [id])
   create_date          DateTime
   update_date          DateTime
   @@unique([external_id, parcela_cod, nsu], name: "transacao_id")
