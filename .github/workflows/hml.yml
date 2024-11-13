@@ -31,7 +31,7 @@ jobs:
               run: yarn install --production
 
             - name: Remove unused files
-              run: find . -type f -not \( -path './dist/*' -or -path './node_modules/*' -or -name 'package.json' -or -name 'serverless.yml' -or -path './serverless/*' -or -name '.npmrc' \) -delete
+              run: find . -type f -not \( -path './build/*' -or -path './node_modules/*' -or -name 'package.json' -or -name 'serverless.yml' -or -path './serverless/*' -or -name '.npmrc' \) -delete
 
             - name: Remove Prisma unused engine
               run: rm -f ./node_modules/.prisma/client/libquery_engine-debian-openssl-1.1.x.so.node
