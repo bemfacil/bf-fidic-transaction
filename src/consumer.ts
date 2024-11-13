@@ -1,5 +1,5 @@
 import { SQSEvent, SQSHandler } from 'aws-lambda';
-import { ArranjoStatusEnum, PrismaClient } from '@prisma/client';
+import { ArrangementStatusEnum, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -11,18 +11,18 @@ export const consumeMessage: SQSHandler = async (event: SQSEvent) => {
       console.log('Processando mensagem:', body);
       let data_vencimento = new Date(body.data_vencimento);
       let arranjo_envio = await verificaArranjo(data_vencimento, body.modalidade, body.bandeira);
-      await prisma.transacao.create({
+      await prisma.fidicTransaction.create({
         data: {
-          arranjo_envio_id: arranjo_envio.id,
+          shipping_arrangement_id: arranjo_envio.id,
           external_id: body.external_id,
-          parcela_cod: body.parcela_cod,
+          installment_cod: body.parcela_cod,
           nsu: body.nsu,
-          valor: body.valor,
+          amount: body.valor,
           mdr: body.mdr,
-          bandeira: body.bandeira,
-          modalidade: body.modalidade,
-          adquirente: body.adquirente,
-          data_vencimento: data_vencimento,
+          flag: body.bandeira,
+          modality: body.modalidade,
+          acquirer: body.adquirente,
+          maturity_date: data_vencimento,
           create_date: new Date(),
           update_date: new Date()
         },
@@ -39,20 +39,20 @@ export const consumeMessage: SQSHandler = async (event: SQSEvent) => {
 };
 async function verificaArranjo(data_vencimento: Date, modalidade: string, bandeira: string) {
   let arranjo_envio = null;
-  let arranjo = await prisma.arranjo.findUnique({
+  let arranjo = await prisma.arrangement.findUnique({
     where: {
-      arranjo_group: {
-        data_vencimento,
-        modalidade: modalidade,
-        bandeira: bandeira
+      arrangement_group: {
+        maturity_date: data_vencimento,
+        modality: modalidade,
+        flag: bandeira
       }
     }
   });
   if (arranjo) {
-    let arranjoEnvio = await prisma.arranjoEnvio.findMany({
+    let arranjoEnvio = await prisma.shippingArrangement.findMany({
       where: {
-        arranjo_id: arranjo.id,
-        status: ArranjoStatusEnum.CRIADO
+        arrangement_id: arranjo.id,
+        status: ArrangementStatusEnum.CREATED
       }
     });
     if (arranjoEnvio.length) {
@@ -61,22 +61,22 @@ async function verificaArranjo(data_vencimento: Date, modalidade: string, bandei
   }
   if (!arranjo_envio) {
     if (!arranjo) {
-      arranjo = await prisma.arranjo.create({
+      arranjo = await prisma.arrangement.create({
         data: {
-          data_vencimento,
-          data_pagamento: data_vencimento,
-          bandeira: bandeira,
-          modalidade: modalidade,
+          maturity_date: data_vencimento,
+          payment_date: data_vencimento,
+          flag: bandeira,
+          modality: modalidade,
           create_date: new Date(),
           update_date: new Date()
         }
       });
     }
-    arranjo_envio = await prisma.arranjoEnvio.create({
+    arranjo_envio = await prisma.shippingArrangement.create({
       data: {
-        arranjo_id: arranjo.id,
-        valor_enviado: null,
-        valor: 0,
+        arrangement_id: arranjo.id,
+        amount_sent: null,
+        amount: 0,
         create_date: new Date(),
         update_date: new Date()
       }

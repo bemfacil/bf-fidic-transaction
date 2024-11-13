@@ -9,86 +9,68 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Arranjo {
-  id              String         @id @default(uuid()) @db.Uuid
-  bandeira        String         @db.VarChar(50)
-  modalidade      String         @db.VarChar(32)
-  data_pagamento  DateTime
-  data_vencimento DateTime
-  create_date     DateTime
-  update_date     DateTime
-  ArranjoEnvio    ArranjoEnvio[]
-  @@unique([bandeira, modalidade, data_vencimento], name: "arranjo_group")
-}
 
-model ArranjoEnvio {
-  id            String             @id @default(uuid()) @db.Uuid
-  arranjo       Arranjo            @relation(fields: [arranjo_id], references: [id])
-  arranjo_id    String             @db.Uuid
-  external_id   String?            @unique @db.VarChar(64)
-  valor         Int
-  valor_enviado Int?
-  status        ArranjoStatusEnum? @default(CRIADO)
-  create_date   DateTime
-  update_date   DateTime
-  Transacao     Transacao[]
-  Validacao     ArranjoValidacao[]
-}
-
-enum ArranjoStatusEnum {
-  CRIADO
-  CALCULADO
-  ENVIADO
-  CONFIRMADO
-  INVALIDO
-  PREVALIDADO
-  VALIDADO
-  INCORRETO
-}
-
-model ArranjoValidacao {
-  id               String       @id @default(uuid()) @db.Uuid
-  payload          Json
-  status           String?
-  create_date      DateTime
-  update_date      DateTime
-  ArranjoEnvio     ArranjoEnvio @relation(fields: [arranjo_envio_id], references: [id])
-  arranjo_envio_id String       @db.Uuid
-}
-
-model UnidadeRecebivel {
-  id                     String                   @id @default(uuid()) @db.Uuid
-  external_id            String                   @unique @db.VarChar(32)
-  arranjo_id             String                   @db.Uuid
+model Arrangement {
+  id                     String         @id @default(uuid()) @db.Uuid
+  flag                   String         @db.VarChar(50)
+  modality               String         @db.VarChar(32)
+  payment_date           DateTime
+  maturity_date          DateTime
   create_date            DateTime
   update_date            DateTime
-  UnidadeRecebivelStatus UnidadeRecebivelStatus[]
+  ShippingArrangement    ShippingArrangement[]
+  @@unique([flag, modality, maturity_date], name: "arrangement_group")
 }
 
-model UnidadeRecebivelStatus {
-  id                   String           @id @default(uuid()) @db.Uuid
-  external_id          String           @unique @db.VarChar(32)
-  unidade_recebivel_id String           @db.Uuid
-  unidade_recebivel    UnidadeRecebivel @relation(fields: [unidade_recebivel_id], references: [id])
-  create_date          DateTime
-  update_date          DateTime
+model ShippingArrangement {
+  id             String             @id @default(uuid()) @db.Uuid
+  arrangement    Arrangement            @relation(fields: [arrangement_id], references: [id])
+  arrangement_id String             @db.Uuid
+  external_id    String?            @unique @db.VarChar(64)
+  amount         Int
+  amount_sent    Int?
+  status         ArrangementStatusEnum? @default(CREATED)
+  create_date    DateTime
+  update_date    DateTime
+  Transaction    FidicTransaction[]
+  Validation     ValidationArrangement[]
 }
 
-model Transacao {
-  id               String        @id @default(uuid()) @db.Uuid
-  external_id      String        @db.VarChar(32)
-  parcela_cod      String        @db.VarChar(32)
-  nsu              String        @db.VarChar(20)
-  valor            Int
-  mdr              Int
-  modalidade       String        @db.VarChar(32)
-  bandeira         String        @db.VarChar(32)
-  adquirente       String        @db.VarChar(32)
-  data_vencimento  DateTime      @db.Date
-  create_date      DateTime
-  update_date      DateTime
-  ArranjoEnvio     ArranjoEnvio? @relation(fields: [arranjo_envio_id], references: [id])
-  arranjo_envio_id String?       @db.Uuid
+enum ArrangementStatusEnum {
+  CALCULATED
+  CREATED
+  SENT
+  CONFIRMED
+  INVALID
+  PREVALIDATED
+  VALIDATED
+  INCORRECT
+}
 
-  @@unique([external_id, parcela_cod, nsu], name: "transacao_id")
+model ValidationArrangement {
+  id                      String              @id @default(uuid()) @db.Uuid
+  payload                 Json
+  status                  String?
+  create_date             DateTime
+  update_date             DateTime
+  ShippingArrangement     ShippingArrangement @relation(fields: [shipping_arrangement_id], references: [id])
+  shipping_arrangement_id String              @db.Uuid
+}
+
+model FidicTransaction {
+  id                      String        @id @default(uuid()) @db.Uuid
+  external_id             String        @db.VarChar(32)
+  installment_cod         String        @db.VarChar(32)
+  nsu                     String        @db.VarChar(20)
+  amount                  Int
+  mdr                     Int
+  modality                String        @db.VarChar(32)
+  flag                    String        @db.VarChar(32)
+  acquirer                String        @db.VarChar(32)
+  maturity_date           DateTime      @db.Date
+  create_date             DateTime
+  update_date             DateTime
+  ShippingArrangement     ShippingArrangement? @relation(fields: [shipping_arrangement_id], references: [id])
+  shipping_arrangement_id String?       @db.Uuid
+  @@unique([external_id, installment_cod, nsu], name: "fidic_transaction_id")
 }
