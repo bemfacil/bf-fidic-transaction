@@ -2,11 +2,13 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["conta_grafica", "admin", "identity_manager", "operator", "onboarding", "retaguarda", "schedule", "payment", "split", "digital_account", "fidic"]
 }
 
 
@@ -19,7 +21,9 @@ model Arrangement {
   create_date            DateTime
   update_date            DateTime
   ShippingArrangement    ShippingArrangement[]
+
   @@unique([flag, modality, maturity_date], name: "arrangement_group")
+  @@schema("fidic")
 }
 
 model ShippingArrangement {
@@ -34,6 +38,8 @@ model ShippingArrangement {
   update_date    DateTime
   Transaction    FidicTransaction[]
   Validation     ValidationArrangement[]
+
+  @@schema("fidic")
 }
 
 enum ArrangementStatusEnum {
@@ -45,6 +51,8 @@ enum ArrangementStatusEnum {
   PREVALIDATED
   VALIDATED
   INCORRECT
+
+  @@schema("fidic")
 }
 
 model ValidationArrangement {
@@ -55,6 +63,8 @@ model ValidationArrangement {
   update_date             DateTime
   ShippingArrangement     ShippingArrangement @relation(fields: [shipping_arrangement_id], references: [id])
   shipping_arrangement_id String              @db.Uuid
+
+  @@schema("fidic")
 }
 
 model FidicTransaction {
@@ -72,5 +82,7 @@ model FidicTransaction {
   update_date             DateTime
   ShippingArrangement     ShippingArrangement? @relation(fields: [shipping_arrangement_id], references: [id])
   shipping_arrangement_id String?       @db.Uuid
+
   @@unique([external_id, installment_cod, nsu], name: "fidic_transaction_id")
+  @@schema("fidic")
 }
