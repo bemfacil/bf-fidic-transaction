@@ -39,6 +39,11 @@ export const consumeMessage: SQSHandler = async (event: SQSEvent) => {
 };
 async function verificaArranjo(data_vencimento: Date, modalidade: string, bandeira: string) {
   let arranjo_envio = null;
+  console.info('verificaArranjo', {
+    maturity_date: data_vencimento,
+    modality: modalidade,
+    flag: bandeira
+  });
   let arranjo = await prisma.arrangement.findUnique({
     where: {
       arrangement_group: {
@@ -61,15 +66,17 @@ async function verificaArranjo(data_vencimento: Date, modalidade: string, bandei
   }
   if (!arranjo_envio) {
     if (!arranjo) {
+      const arranjo_data = {
+        maturity_date: data_vencimento,
+        payment_date: data_vencimento,
+        flag: bandeira,
+        modality: modalidade,
+        create_date: new Date(),
+        update_date: new Date()
+      };
+      console.info('cria arranjo ', arranjo_data);
       arranjo = await prisma.arrangement.create({
-        data: {
-          maturity_date: data_vencimento,
-          payment_date: data_vencimento,
-          flag: bandeira,
-          modality: modalidade,
-          create_date: new Date(),
-          update_date: new Date()
-        }
+        data: arranjo_data
       });
     }
     arranjo_envio = await prisma.shippingArrangement.create({
