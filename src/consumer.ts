@@ -10,6 +10,7 @@ export const consumeMessage: SQSHandler = async (event: SQSEvent) => {
       const body = JSON.parse(record.body);
       console.log('Processando mensagem:', body);
       let data_vencimento = new Date(body.data_vencimento);
+      let data_transacao = new Date(body.data_trn)
       let arranjo_envio = await verificaArranjo(data_vencimento, body.modalidade, body.bandeira);
       await prisma.fidicTransaction.create({
         data: {
@@ -23,6 +24,7 @@ export const consumeMessage: SQSHandler = async (event: SQSEvent) => {
           modality: body.modalidade,
           acquirer: body.adquirente,
           maturity_date: data_vencimento,
+          transaction_date: data_transacao,
           create_date: new Date(),
           update_date: new Date()
         },

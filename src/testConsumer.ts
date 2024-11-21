@@ -15,7 +15,8 @@ const event = {
         "bandeira": "MCC",
         "modalidade": "C",
         "adquirente": "Vero",
-        "data_vencimento":"2024-11-28"
+        "data_vencimento":"2024-11-28",
+        "data_trn": "2024-11-28"
       }),
       attributes: {},
       messageAttributes: {},

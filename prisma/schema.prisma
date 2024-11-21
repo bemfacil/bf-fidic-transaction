@@ -79,6 +79,7 @@ model FidicTransaction {
   flag                    String        @db.VarChar(32)
   acquirer                String        @db.VarChar(32)
   maturity_date           DateTime      @db.Date
+  transaction_date        DateTime      @db.Date
   create_date             DateTime
   update_date             DateTime
   ShippingArrangement     ShippingArrangement? @relation(fields: [shipping_arrangement_id], references: [id])
