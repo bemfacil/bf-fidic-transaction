@@ -9,26 +9,29 @@ export const consumeMessage: SQSHandler = async (event: SQSEvent) => {
     for (const record of event.Records) {
       const body = JSON.parse(record.body);
       console.log('Processando mensagem:', body);
-      let data_vencimento = new Date(body.data_vencimento);
-      let data_transacao = new Date(body.data_trn)
-      let arranjo_envio = await verificaArranjo(data_vencimento, body.modalidade, body.bandeira);
-      await prisma.fidicTransaction.create({
-        data: {
-          shipping_arrangement_id: arranjo_envio.id,
-          external_id: body.external_id,
-          installment_cod: body.parcela_cod,
-          nsu: body.nsu,
-          amount: body.valor,
-          mdr: body.mdr,
-          flag: body.bandeira,
-          modality: body.modalidade,
-          acquirer: body.adquirente,
-          maturity_date: data_vencimento,
-          transaction_date: data_transacao,
-          create_date: new Date(),
-          update_date: new Date()
-        },
-      });
+      
+      for (const item of body) {
+        let data_vencimento = new Date(item.data_vencimento);
+        let data_transacao = new Date(item.data_trn)
+        let arranjo_envio = await verificaArranjo(data_vencimento, item.modalidade, item.bandeira);
+        await prisma.fidicTransaction.create({
+          data: {
+            shipping_arrangement_id: arranjo_envio.id,
+            external_id: item.external_id,
+            installment_cod: item.parcela_cod,
+            nsu: item.nsu,
+            amount: item.valor,
+            mdr: item.mdr,
+            flag: item.bandeira,
+            modality: item.modalidade,
+            acquirer: item.adquirente,
+            maturity_date: data_vencimento,
+            transaction_date: data_transacao,
+            create_date: new Date(),
+            update_date: new Date()
+          },
+        });
+      }
     }
   } catch (error) {
     console.error('Erro ao processar mensagem:', error);

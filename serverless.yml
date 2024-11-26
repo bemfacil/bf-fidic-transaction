@@ -30,46 +30,48 @@ functions:
           request:
             schemas:
               application/json:
-                schema: {
-                  "type": "object",
-                  "properties": {
-                    "external_id": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "parcela_cod": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "nsu": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "valor": {
-                      "type": "number",
-                      "minimum": 0
-                    },
-                    "mdr": {
-                      "type": "number",
-                      "minimum": 0
-                    },
-                    "modalidade": {"type": "string"},
-                    "bandeira": {"type": "string"},
-                    "data_vencimento": {
-                      "type": "string",
-                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-                    },
-                    "data_trn": {
-                      "type": "string",
-                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-                    },
-                    "adquirente": {"type": "string"}
-                  },
-                  "required": ["external_id", "nsu", "valor", "modalidade", "bandeira"],
-                  "additionalProperties": false
-                }
+                schema: 
+                  type: "array"
+                  items:
+                    type: "object"
+                    properties: 
+                      external_id: 
+                        type: "string"
+                        minLength: 1
+                      parcela_cod: 
+                        type: "string"
+                        minLength: 1
+                      nsu: 
+                        type: "string"
+                        minLength: 1
+                      valor: 
+                        type: "number"
+                        minimum: 0
+                      mdr: 
+                        type: "number"
+                        minimum: 0
+                      modalidade: 
+                        type: "string"
+                      bandeira: 
+                        type: "string"
+                      data_vencimento: 
+                        type: "string"
+                        pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+                      data_trn: 
+                        type: "string"
+                        pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+                      adquirente: 
+                        type: "string"
+                    required: 
+                      - external_id
+                      - nsu
+                      - valor
+                      - modalidade
+                      - bandeira
+                    additionalProperties: false
                 name: TransactionRegister
-                description: 'Valida as informações da transação'
+                description: 'Valida um array de transações'
+
 
   consumeMessage:  # Função consumidora
     name: ${env:STACK_NAME}-transaction-consumer
