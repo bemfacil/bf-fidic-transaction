@@ -21,7 +21,7 @@ export const consumeMessage: SQSHandler = async (event: SQSEvent) => {
             installment_cod: item.parcela_cod,
             nsu: item.nsu,
             amount: item.valor * 100,
-            mdr: item.mdr,
+            mdr: item.mdr * 100,
             flag: item.bandeira,
             modality: item.modalidade,
             acquirer: item.adquirente,
